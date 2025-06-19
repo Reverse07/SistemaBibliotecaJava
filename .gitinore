@@ -1,0 +1,12 @@
+# Ignorar carpetas de configuración de NetBeans
+nbproject/private/
+build/
+dist/
+*.class
+*.jar
+*.log
+*.iml
+.idea/
+*.iws
+.DS_Store
+Thumbs.db
