@@ -16,8 +16,9 @@ public class UsuarioDAO {
 
    public List<Usuario> obtenerTodos() {
         List<Usuario> usuarios = new ArrayList<>();
-        String sql = "SELECT u.*, r.nombre AS nombre_rol FROM usuarios u " +
-                     "JOIN roles_biblioteca r ON u.id_rol = r.id";
+      String sql = "SELECT u.*, r.nombre AS nombre_rol FROM usuarios u " +
+             "JOIN roles r ON u.id_rol = r.id";
+
 
         try (Connection con = Conexion.getConnection();
              Statement stmt = con.createStatement();
@@ -45,7 +46,7 @@ public class UsuarioDAO {
 
     public Usuario obtenerPorId(int id) {
         String sql = "SELECT u.*, r.nombre AS nombre_rol FROM usuarios u " +
-                     "JOIN roles_biblioteca r ON u.id_rol = r.id WHERE u.id = ?";
+                     "JOIN roles r ON u.id_rol = r.id WHERE u.id = ?";
 
         try (Connection con = Conexion.getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {

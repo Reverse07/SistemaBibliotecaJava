@@ -13,12 +13,14 @@ import java.sql.Connection;
 
 public class LibroDAO {
 
-    public List<Libro> obtenerTodos() {
+       public List<Libro> obtenerTodos() {
         List<Libro> libros = new ArrayList<>();
         String sql = "SELECT l.*, c.nombre AS nombre_categoria FROM libros l "
-                + "JOIN categorias c ON l.id_categoria = c.id";
+                   + "LEFT JOIN categorias c ON l.id_categoria = c.id";
 
-        try (Connection con = Conexion.getConnection(); Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+        try (Connection con = Conexion.getConnection(); 
+             Statement stmt = con.createStatement(); 
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
                 Categoria c = new Categoria(rs.getInt("id_categoria"), rs.getString("nombre_categoria"));
@@ -26,7 +28,7 @@ public class LibroDAO {
                         rs.getInt("id"),
                         rs.getString("titulo"),
                         rs.getString("autor"),
-                        rs.getDate("anio_publicacion"),
+                        rs.getInt("anio_publicacion"), // ← ya no getDate
                         rs.getString("isbn"),
                         rs.getInt("stock"),
                         rs.getString("rutaImagen"),
@@ -44,8 +46,10 @@ public class LibroDAO {
 
     public Libro obtenerPorId(int id) {
         String sql = "SELECT l.*, c.nombre AS nombre_categoria FROM libros l "
-                + "JOIN categorias c ON l.id_categoria = c.id WHERE l.id = ?";
-        try (Connection con = Conexion.getConnection(); PreparedStatement stmt = con.prepareStatement(sql)) {
+                   + "JOIN categorias c ON l.id_categoria = c.id WHERE l.id = ?";
+
+        try (Connection con = Conexion.getConnection(); 
+             PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
@@ -56,14 +60,13 @@ public class LibroDAO {
                         rs.getInt("id"),
                         rs.getString("titulo"),
                         rs.getString("autor"),
-                        rs.getDate("anio_publicacion"),
+                        rs.getInt("anio_publicacion"),
                         rs.getString("isbn"),
                         rs.getInt("stock"),
                         rs.getString("rutaImagen"),
                         c,
                         rs.getString("descripcion")
                 );
-
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -72,12 +75,14 @@ public class LibroDAO {
     }
 
     public boolean insertar(Libro libro) {
-        String sql = "INSERT INTO libros (titulo, autor, anio_publicacion, id_categoria, isbn, stock) VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection con = Conexion.getConnection(); PreparedStatement stmt = con.prepareStatement(sql)) {
+        String sql = "INSERT INTO libros (titulo, autor, anio_publicacion, id_categoria, isbn, stock, rutaImagen, descripcion) "
+                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection con = Conexion.getConnection(); 
+             PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, libro.getTitulo());
             stmt.setString(2, libro.getAutor());
-            stmt.setDate(3, new java.sql.Date(libro.getAnio_publicacion().getTime()));
+            stmt.setInt(3, libro.getAnio_publicacion()); // ← ya no setDate
             stmt.setInt(4, libro.getCategoria().getId());
             stmt.setString(5, libro.getIsbn());
             stmt.setInt(6, libro.getStock());
@@ -92,18 +97,19 @@ public class LibroDAO {
     }
 
     public boolean actualizar(Libro libro) {
-        String sql = "UPDATE libros SET titulo = ?, autor = ?, anio_publicacion = ?, id_categoria = ?, isbn = ?, stock = ? WHERE id = ?";
-        try (Connection con = Conexion.getConnection(); PreparedStatement stmt = con.prepareStatement(sql)) {
+        String sql = "UPDATE libros SET titulo = ?, autor = ?, anio_publicacion = ?, id_categoria = ?, isbn = ?, stock = ?, rutaImagen = ?, descripcion = ? WHERE id = ?";
+        try (Connection con = Conexion.getConnection(); 
+             PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, libro.getTitulo());
             stmt.setString(2, libro.getAutor());
-            stmt.setDate(3, new java.sql.Date(libro.getAnio_publicacion().getTime()));
+            stmt.setInt(3, libro.getAnio_publicacion()); // ← ya no setDate
             stmt.setInt(4, libro.getCategoria().getId());
             stmt.setString(5, libro.getIsbn());
             stmt.setInt(6, libro.getStock());
-            stmt.setInt(7, libro.getId());
-            stmt.setString(8, libro.getRutaImagen());
-            stmt.setString(9, libro.getDescripcion());
+            stmt.setString(7, libro.getRutaImagen());
+            stmt.setString(8, libro.getDescripcion());
+            stmt.setInt(9, libro.getId());
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -114,7 +120,8 @@ public class LibroDAO {
 
     public boolean eliminar(int id) {
         String sql = "DELETE FROM libros WHERE id = ?";
-        try (Connection con = Conexion.getConnection(); PreparedStatement stmt = con.prepareStatement(sql)) {
+        try (Connection con = Conexion.getConnection(); 
+             PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
@@ -126,7 +133,9 @@ public class LibroDAO {
 
     public static int contarLibros() {
         int total = 0;
-        try (Connection conn = Conexion.getConnection(); PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM libro"); ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = Conexion.getConnection(); 
+             PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM libros"); 
+             ResultSet rs = stmt.executeQuery()) {
 
             if (rs.next()) {
                 total = rs.getInt(1);
@@ -137,3 +146,5 @@ public class LibroDAO {
         return total;
     }
 }
+
+

@@ -8,7 +8,7 @@ public class Libro {
     private int id;
     private String titulo;
     private String autor;
-    private Date anio_publicacion;
+    private int anio_publicacion;
     private String isbn;
     private int stock;
     private String rutaImagen;
@@ -18,7 +18,7 @@ public class Libro {
     public Libro() {
     }
 
-    public Libro(int id, String titulo, String autor, Date anio_publicacion, String isbn, int stock, String rutaImagen, Categoria categoria, String descripcion) {
+    public Libro(int id, String titulo, String autor, int anio_publicacion, String isbn, int stock, String rutaImagen, Categoria categoria, String descripcion) {
         this.id = id;
         this.titulo = titulo;
         this.autor = autor;
@@ -30,8 +30,7 @@ public class Libro {
         this.descripcion = descripcion;
     }
 
-
-
+  
     public int getId() {
         return id;
     }
@@ -56,11 +55,11 @@ public class Libro {
         this.autor = autor;
     }
 
-    public Date getAnio_publicacion() {
+    public int getAnio_publicacion() {
         return anio_publicacion;
     }
 
-    public void setAnio_publicacion(Date anio_publicacion) {
+    public void setAnio_publicacion(int anio_publicacion) {
         this.anio_publicacion = anio_publicacion;
     }
 

@@ -18,7 +18,6 @@ C:\Users\Usuario\OneDrive - Universidad Tecnologica del Peru\Documentos\NetBeans
 C:\Users\Usuario\OneDrive - Universidad Tecnologica del Peru\Documentos\NetBeansProjects\iLib1\src\main\java\Controlador\PrestamoDAO.java
 C:\Users\Usuario\OneDrive - Universidad Tecnologica del Peru\Documentos\NetBeansProjects\iLib1\src\main\java\Controlador\DevolucionDAO.java
 C:\Users\Usuario\OneDrive - Universidad Tecnologica del Peru\Documentos\NetBeansProjects\iLib1\src\main\java\Vista\InterEditarUsuario.java
-C:\Users\Usuario\OneDrive - Universidad Tecnologica del Peru\Documentos\NetBeansProjects\iLib1\src\main\java\Vista\InterLibroBiblioteca.java
 C:\Users\Usuario\OneDrive - Universidad Tecnologica del Peru\Documentos\NetBeansProjects\iLib1\src\main\java\Modelo\Categoria.java
 C:\Users\Usuario\OneDrive - Universidad Tecnologica del Peru\Documentos\NetBeansProjects\iLib1\src\main\java\Vista\InterNuevoPrestamo.java
 C:\Users\Usuario\OneDrive - Universidad Tecnologica del Peru\Documentos\NetBeansProjects\iLib1\src\main\java\Controlador\RolesDAO.java
@@ -26,4 +25,6 @@ C:\Users\Usuario\OneDrive - Universidad Tecnologica del Peru\Documentos\NetBeans
 C:\Users\Usuario\OneDrive - Universidad Tecnologica del Peru\Documentos\NetBeansProjects\iLib1\src\main\java\Modelo\Libro.java
 C:\Users\Usuario\OneDrive - Universidad Tecnologica del Peru\Documentos\NetBeansProjects\iLib1\src\main\java\Controlador\Conexion.java
 C:\Users\Usuario\OneDrive - Universidad Tecnologica del Peru\Documentos\NetBeansProjects\iLib1\src\main\java\Controlador\LibroDAO.java
+C:\Users\Usuario\OneDrive - Universidad Tecnologica del Peru\Documentos\NetBeansProjects\iLib1\src\main\java\Vista\InterLibros.java
 C:\Users\Usuario\OneDrive - Universidad Tecnologica del Peru\Documentos\NetBeansProjects\iLib1\src\main\java\Modelo\Usuario.java
+C:\Users\Usuario\OneDrive - Universidad Tecnologica del Peru\Documentos\NetBeansProjects\iLib1\src\main\java\Vista\InterDetallesLibrosBiblioteca.java

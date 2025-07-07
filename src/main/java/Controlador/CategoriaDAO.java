@@ -14,108 +14,112 @@ import java.util.List;
 
 public class CategoriaDAO {
 
-
-    public List<Categoria> obtenerTodas() {
-        
+ public List<Categoria> obtenerTodas() {
         List<Categoria> categorias = new ArrayList<>();
-        String sql = "select * from categorias";
-        
-        try(Connection con = Conexion.getConnection();
-                Statement stmt = con.createStatement();
-                ResultSet rs = stmt.executeQuery(sql))       
-        {
-            
-            while (rs.next())  {
-                
-                Categoria c = new Categoria (rs.getInt("id"), rs.getString("nombre"));
-                categorias.add(c);                               
+        String sql = "SELECT * FROM categorias";
+
+        try (Connection con = Conexion.getConnection();
+             Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Categoria c = new Categoria(rs.getInt("id"), rs.getString("nombre"));
+                categorias.add(c);
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }        
-        return categorias;        
+        }
+
+        return categorias;
     }
-    
-    public Categoria obtenerPorId(int id) { 
-        
-        String sql = "select * from categorias where id = ?";
-        
+
+
+    public Categoria obtenerPorId(int id) {
+        String sql = "SELECT * FROM categorias WHERE id = ?";
+
         try (Connection con = Conexion.getConnection();
-                PreparedStatement stmt = con.prepareStatement(sql))  {
-                stmt.setInt(1, id);
-                ResultSet rs = stmt.executeQuery();
-                
-                if(rs.next())   {
-                    return new Categoria(rs.getInt("id"),rs.getString("nombre"));                  
-                }
-      }  catch (SQLException e)  {
-    e.printStackTrace();   
-}
-return null;
-}
-    
-    public boolean guardar (Categoria categoria) {
-        
-        String sql = "Insert into (nombre) values (?)";
-        
-        try(Connection con = Conexion.getConnection();
-                PreparedStatement stmt = con.prepareStatement(sql)) {
-              stmt.setString(1, categoria.getNombre());
-              stmt.setInt(2, categoria.getId());
-              return stmt.executeUpdate()>0;
-                           
-          } catch (SQLException e) {
-        e.printStackTrace();        
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return new Categoria(rs.getInt("id"), rs.getString("nombre"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
-    
+
+
+    public boolean guardar(Categoria categoria) {
+        String sql = "INSERT INTO categorias (nombre) VALUES (?)";
+
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, categoria.getNombre());
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return false;
-  }    
-    
-    public boolean actualizar (Categoria categoria) {
-        
-        String sql = "update categorias set nombre = ? where id = ?";
-        
-        try(Connection con = Conexion.getConnection();
-                PreparedStatement stmt = con.prepareStatement(sql)){
+    }
+
+
+    public boolean actualizar(Categoria categoria) {
+        String sql = "UPDATE categorias SET nombre = ? WHERE id = ?";
+
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, categoria.getNombre());
             stmt.setInt(2, categoria.getId());
             return stmt.executeUpdate() > 0;
-            
-        } catch (SQLException e) {        
-        e.printStackTrace();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
-        
-        return false;
-}
-    
-    public boolean eliminar (int id) {
-        
-        String sql = "delete from categorias where id = ?";
-        
+
+
+    public boolean eliminar(int id) {
+        String sql = "DELETE FROM categorias WHERE id = ?";
+
         try (Connection con = Conexion.getConnection();
-                PreparedStatement stmt = con.prepareStatement(sql)){
-               stmt.setInt(1,id);
-               return stmt.executeUpdate()>0;
-    } catch (SQLException e) {
-  
-        e.printStackTrace();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+
         return false;
-        
-        }
-    
-      public static int contarCategorias() {
+    }
+
+   
+    public static int contarCategorias() {
         int total = 0;
+
         try (Connection conn = Conexion.getConnection();
-             PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM categoria");
+             PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM categorias");
              ResultSet rs = stmt.executeQuery()) {
 
             if (rs.next()) {
                 total = rs.getInt(1);
             }
+
         } catch (Exception e) {
             System.err.println("❌ Error contando categorías: " + e.getMessage());
         }
+        
+
         return total;
     }
 }
+

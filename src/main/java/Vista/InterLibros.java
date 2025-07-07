@@ -1,21 +1,126 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
- */
 package Vista;
 
-/**
- *
- * @author Usuario
- */
+import Modelo.Libro;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Image;
+import java.net.URL;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 public class InterLibros extends javax.swing.JPanel {
 
-  
+    private Libro libroSeleccionado;
+
     public InterLibros() {
         initComponents();
+        configurarInterfaz();
+    }
+
+    private void configurarInterfaz() {
+        setLayout(new BorderLayout());
+         setBackground(new Color(227, 242, 253));
+
+        // Título
+        jLabel1 = new JLabel("📚 Catálogo de Libros", JLabel.CENTER);
+        jLabel1.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        jLabel1.setBorder(BorderFactory.createEmptyBorder(25, 0, 15, 0));
+        add(jLabel1, BorderLayout.NORTH);
+
+        // Panel de botones
+        jPanel1 = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
+        jPanel1.setBackground(Color.WHITE);
+
+        // Cargar íconos escalados
+        ImageIcon iconNuevo = escalarIcono("/img/nuevo.png", 20, 20);
+        ImageIcon iconEditar = escalarIcono("/img/editar.png", 20, 20);
+        ImageIcon iconEliminar = escalarIcono("/img/eliminar.png", 20, 20);
+        ImageIcon iconActualizar = escalarIcono("/img/actualizar.png", 20, 20);
+
+        jButtonNuevo = new RoundedButton("Nuevo", iconNuevo);
+        jButton_Editar = new RoundedButton("Editar", iconEditar);
+        jButton_Eliminar = new RoundedButton("Eliminar", iconEliminar);
+        jButton_Actualizar = new RoundedButton("Actualizar", iconActualizar);
+
+        // Botones con tamaño uniforme
+        Dimension btnSize = new Dimension(140, 40);
+        for (JButton btn : new JButton[]{jButtonNuevo, jButton_Editar, jButton_Eliminar, jButton_Actualizar}) {
+            btn.setPreferredSize(btnSize);
+            jPanel1.add(btn);
+        }
+
+        add(jPanel1, BorderLayout.SOUTH);
+
+        // Carrusel de libros
+        jPanel2 = new CarruselLibros(this);
+        jPanel2.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+        add(jPanel2, BorderLayout.CENTER);
+
+        agregarEventos();
     }
     
-    
+    private ImageIcon escalarIcono(String ruta, int ancho, int alto) {
+    URL url = getClass().getResource(ruta);
+    if (url != null) {
+        ImageIcon icon = new ImageIcon(url);
+        Image imagenEscalada = icon.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+        return new ImageIcon(imagenEscalada);
+    } else {
+        System.err.println("❌ Icono no encontrado: " + ruta);
+        return null;
+    }
+}
+
+
+    private void agregarEventos() {
+        jButtonNuevo.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this, "Evento Nuevo libro (por implementar)");
+        });
+
+        jButton_Editar.addActionListener(e -> {
+            if (libroSeleccionado != null) {
+                JOptionPane.showMessageDialog(this, "Editar: " + libroSeleccionado.getTitulo());
+            } else {
+                JOptionPane.showMessageDialog(this, "Selecciona un libro para editar");
+            }
+        });
+
+        jButton_Eliminar.addActionListener(e -> {
+            if (libroSeleccionado != null) {
+                int confirm = JOptionPane.showConfirmDialog(this, "¿Eliminar el libro seleccionado?", "Confirmar", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    JOptionPane.showMessageDialog(this, "Libro eliminado (simulado)");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Selecciona un libro para eliminar");
+            }
+        });
+
+        jButton_Actualizar.addActionListener(e -> {
+            remove(jPanel2);
+            jPanel2 = new CarruselLibros(this);
+            add(jPanel2, BorderLayout.CENTER);
+            revalidate();
+            repaint();
+        });
+    }
+
+    public void seleccionarLibro(Libro libro) {
+        this.libroSeleccionado = libro;
+        JOptionPane.showMessageDialog(this,
+                "<html><h3>" + libro.getTitulo() + "</h3>"
+                + "<p>Autor: " + libro.getAutor() + "</p>"
+                + "<p>Año: " + libro.getAnio_publicacion() + "</p></html>",
+                "📖 Detalles del Libro", JOptionPane.INFORMATION_MESSAGE);
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
