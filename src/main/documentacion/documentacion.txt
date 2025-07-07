@@ -1,0 +1,52 @@
+# 📚 Sistema de Gestión de Biblioteca - Java
+
+Este es un sistema completo para la gestión de una biblioteca, desarrollado en *Java Swing* con conexión a base de datos. Permite registrar, consultar, editar y eliminar información de libros, usuarios y préstamos de manera eficiente y visualmente profesional.
+
+---
+
+## 🛠 Tecnologías utilizadas
+
+- Java SE 8+
+- Swing (Interfaz gráfica)
+- FlatLaf (estilo visual moderno)
+- MySQL o SQL Server (gestión de base de datos)
+- NetBeans IDE
+- Git / GitHub (control de versiones)
+
+---
+
+## 📂 Estructura del proyecto
+SistemaBibliotecaJava:
+    - src/:
+        - Modelo/: "Clases modelo (Libro, Usuario, Categoria, etc.)"
+        - Controlador/: "Clases DAO, lógica de conexión"
+        - Vista/: "Interfaces gráficas (InterLibro, InterUsuario, etc.)"
+    - img/: "Imágenes para las tarjetas de libros"
+    - database/: "Script SQL con estructura de la base de datos"
+    - README.md: "Documentación del proyecto"
+    - .gitignore: "Archivos/carpetas excluidos de Git"
+
+## 📌 Funcionalidades principales
+
+- ✅ Gestión de libros (Agregar, Editar, Eliminar, Ver detalles)
+- ✅ Visualización tipo carrusel con imágenes de portada
+- ✅ Registro y gestión de usuarios
+- ✅ Control de préstamos y devoluciones
+- ✅ CRUD conectado a base de datos
+- ✅ Estilo visual moderno con FlatLaf
+- ✅ Validaciones en formularios
+- ✅ Interfaces limpias, profesionales y responsivas
+
+ejecucion:
+  - git clone https://github.com/Reverse07/SistemaBibliotecaJava.git
+  - Abre el proyecto en NetBeans (Archivo > Abrir Proyecto)
+  - Crea la base de datos 'biblioteca'
+  - Ejecuta el script SQL incluido
+  - Edita Conexion.java con tus credenciales
+  - Ejecuta la clase principal Inicio.java
+
+
+integrantes: 
+-Diego Arroyo Zuasnabar: "Integración visual y documentación técnica"
+-Ribau Alexander Oscco :"Me encargue de toda la logica de la capa controlador"
+-Fernando : "Me encargue de toda la logica de la capa Modelo"
