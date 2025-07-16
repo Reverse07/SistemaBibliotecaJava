@@ -74,6 +74,8 @@ public class Inicio extends javax.swing.JFrame {
         iconos.put("Usuarios", "usuarios.png");
         iconos.put("Libros", "libros.png");
         iconos.put("Reportes", "reportes.png");
+        iconos.put("Busqueda", "Buscar.png"); // Asegúrate de tener buscar.png en /img/
+
     }
 
     private void initComponents2() {
@@ -91,7 +93,7 @@ public class Inicio extends javax.swing.JFrame {
         tituloMenu.setBorder(BorderFactory.createEmptyBorder(20, 10, 30, 10));
         jPanelMenu.add(tituloMenu);
 
-        String[] opciones = {"Principal", "Préstamos", "Devoluciones", "Usuarios", "Libros", "Reportes"};
+        String[] opciones = {"Principal", "Préstamos", "Devoluciones", "Usuarios", "Libros", "Reportes","Busqueda"};
         for (String opcion : opciones) {
             jPanelMenu.add(crearBotonMenu(opcion));
         }
@@ -116,7 +118,11 @@ public class Inicio extends javax.swing.JFrame {
                 case "Usuarios" ->
                     jPanelContenido.add(new InterUsuario(), opcion);
                 case "Libros" ->
-                    jPanelContenido.add(new InterLibros(), opcion);
+                    jPanelContenido.add(new InterLibros(), opcion);                    
+                case "Reportes" ->
+                        jPanelContenido.add(new InterReportes(), opcion);              
+                case "Busqueda" ->
+                            jPanelContenido.add(new InterBusquedaAvanzada(), opcion);   
                 default ->
                     jPanelContenido.add(panel(opcion), opcion);  // Temporal
             }
@@ -361,7 +367,6 @@ public class Inicio extends javax.swing.JFrame {
             }
         });
 
-        // Animación de número
        // Animación de número
 new Thread(() -> {
     int valorActual = 0;

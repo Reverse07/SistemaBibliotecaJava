@@ -11,7 +11,12 @@ private Date fechaDevolucion;
 private String estado;
 private Usuario usuario;
 
+
     public Prestamo() {
+    }
+    
+      public Prestamo(int id) {
+        this.id = id;
     }
 
     public Prestamo(int id, Date fechaPrestamo, Date fechaDevolucion, String estado, Usuario usuario) {
@@ -21,6 +26,7 @@ private Usuario usuario;
         this.estado = estado;
         this.usuario = usuario;
     }
+
 
     public int getId() {
         return id;

@@ -34,7 +34,6 @@ import javax.swing.SwingConstants;
 
 public class InterEditarUsuario extends javax.swing.JDialog {
 
-
     private Usuario usuarioOriginal;
 
     public InterEditarUsuario(Frame parent, Usuario usuario) {
@@ -48,7 +47,16 @@ public class InterEditarUsuario extends javax.swing.JDialog {
 
     private void initComponents2() {
         setLayout(new BorderLayout());
-        JPanel panel = new JPanel(new GridBagLayout());
+        JPanel panel = new JPanel(new GridBagLayout()) {
+            Image bg = new ImageIcon(getClass().getResource("/img/fondoLibreria.jpg")).getImage();
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(bg, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+        panel.setOpaque(false);
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         GridBagConstraints gbc = new GridBagConstraints();

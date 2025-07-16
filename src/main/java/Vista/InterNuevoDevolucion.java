@@ -1,7 +1,9 @@
 package Vista;
 
+import Controlador.DevolucionDAO;
 import Controlador.PrestamoDAO;
 import Controlador.UsuarioDAO;
+import Modelo.Devolucion;
 import Modelo.Prestamo;
 import Modelo.Usuario;
 import com.formdev.flatlaf.json.ParseException;
@@ -35,19 +37,23 @@ public class InterNuevoDevolucion extends javax.swing.JDialog {
     private JComboBox<String> comboEstado;
     private JButton btnGuardar, btnCancelar;
     private ImageIcon iconGuardar, iconCancelar;
+    private InterDevolucion panelDevolucion;
 
-    public InterNuevoDevolucion(java.awt.Frame parent, boolean modal) {
-         super(parent, modal);
+    public InterNuevoDevolucion(java.awt.Frame parent, boolean modal, InterDevolucion panelDevolucion) {
+        super(parent, modal);
+        this.panelDevolucion = panelDevolucion;
         setTitle("Nueva Devolución");
         setSize(500, 350);
         setLocationRelativeTo(parent);
         setResizable(false);
         initComponents2();
+        cargarPrestamosActivos();
     }
 
     private void initComponents2() {
         jPanel1 = new JPanel(new GridBagLayout()) {
             Image bg = new ImageIcon(getClass().getResource("/img/fondoLibreria.jpg")).getImage();
+
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -64,7 +70,7 @@ public class InterNuevoDevolucion extends javax.swing.JDialog {
         Color colorTexto = new Color(30, 30, 30);
 
         // Etiqueta: Préstamo
-        jLabel_prestamo = new JLabel(" ID Préstamo:", cargarIcono("prestamo.png", 20, 20), JLabel.LEFT);
+        jLabel_prestamo = new JLabel(" ID Préstamo:", cargarIcono("prestamos.png", 20, 20), JLabel.LEFT);
         jLabel_prestamo.setFont(fuente);
         jLabel_prestamo.setForeground(colorTexto);
 
@@ -80,7 +86,7 @@ public class InterNuevoDevolucion extends javax.swing.JDialog {
         txt_FechaDevolucion.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
         // Etiqueta: Observaciones
-        jLabel_observaciones = new JLabel(" Observaciones:", cargarIcono("observacion.png", 20, 20), JLabel.LEFT);
+        jLabel_observaciones = new JLabel(" Observaciones:", cargarIcono("observaciones.png", 20, 20), JLabel.LEFT);
         jLabel_observaciones.setFont(fuente);
         jLabel_observaciones.setForeground(colorTexto);
 
@@ -148,6 +154,7 @@ public class InterNuevoDevolucion extends javax.swing.JDialog {
         jButton_Guardar.addActionListener(e -> jButton_GuardarActionPerformed(null));
 
     }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -263,17 +270,47 @@ public class InterNuevoDevolucion extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton_GuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_GuardarActionPerformed
-         // Aquí puedes implementar tu lógica para guardar la devolución
-        String prestamo = (String) jComboBox1.getSelectedItem();
-        String fecha = txt_FechaDevolucion.getText();
-        String observaciones = txt_FechaDevolucion1.getText();
+        String prestamoSeleccionado = (String) jComboBox1.getSelectedItem();
+        String fechaTexto = txt_FechaDevolucion.getText().trim();
+        String observaciones = txt_FechaDevolucion1.getText().trim();
 
-        if (prestamo != null && !fecha.isEmpty()) {
-            // Simulación
-            JOptionPane.showMessageDialog(this, "✅ Devolución registrada correctamente.");
-            dispose();
-        } else {
+        // Validación básica
+        if (prestamoSeleccionado == null || prestamoSeleccionado.isEmpty() || fechaTexto.isEmpty()) {
             JOptionPane.showMessageDialog(this, "⚠️ Completa todos los campos requeridos.");
+            return;
+        }
+
+        // Extraer ID del préstamo (antes del guion)
+        int idPrestamo;
+        try {
+            String[] partes = prestamoSeleccionado.split(" - ");
+            idPrestamo = Integer.parseInt(partes[0]);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "❌ Error al obtener el ID del préstamo.");
+            return;
+        }
+
+        // Validar formato de fecha
+        java.sql.Date fechaSQL;
+        try {
+            fechaSQL = java.sql.Date.valueOf(fechaTexto); // formato: yyyy-MM-dd
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, "❌ Formato de fecha inválido. Usa yyyy-MM-dd.");
+            return;
+        }
+
+        // Crear y registrar la devolución
+        Devolucion d = new Devolucion();
+        d.setPrestamo(new Prestamo(idPrestamo));
+        d.setFechaDevolucion(fechaSQL);
+        d.setObservaciones(observaciones);
+
+        boolean exito = new DevolucionDAO().registrarDevolucion(d);
+        if (exito) {
+            JOptionPane.showMessageDialog(this, "✅ Devolución registrada correctamente.");
+            dispose(); // Cierra el diálogo
+        } else {
+            JOptionPane.showMessageDialog(this, "❌ Error al guardar la devolución.");
         }
     }
 
@@ -286,8 +323,17 @@ public class InterNuevoDevolucion extends javax.swing.JDialog {
             System.err.println("❌ No se pudo cargar el ícono: " + nombreArchivo);
             return null;
         }
-    }//GEN-LAST:event_jButton_GuardarActionPerformed
+    }
 
+    private void cargarPrestamosActivos() {
+        PrestamoDAO dao = new PrestamoDAO();
+        List<Prestamo> lista = dao.obtenerPrestamosActivos();
+
+        jComboBox1.removeAllItems();
+        for (Prestamo p : lista) {
+            jComboBox1.addItem(p.getId() + " - " + p.getUsuario().getNombre() + " " + p.getUsuario().getApellido());
+        }
+    }//GEN-LAST:event_jButton_GuardarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

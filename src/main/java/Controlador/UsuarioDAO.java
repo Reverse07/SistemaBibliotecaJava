@@ -13,6 +13,27 @@ import java.util.List;
 
 
 public class UsuarioDAO {
+    
+   public boolean insertar(Usuario usuario) {
+    String sql = "INSERT INTO usuarios (nombre, apellido, dni, correo, telefono, id_rol) VALUES (?, ?, ?, ?, ?, ?)";
+    try (Connection conn = Conexion.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setString(1, usuario.getNombre());
+        stmt.setString(2, usuario.getApellido());
+        stmt.setInt(3, usuario.getDni());
+        stmt.setString(4, usuario.getCorreo());
+        stmt.setInt(5, usuario.getTelefono());
+        stmt.setInt(6, usuario.getRol().getId()); // ⚠️ CUIDADO: Si esto es 0 y tu tabla no acepta eso, fallará
+
+        int filas = stmt.executeUpdate();
+        return filas > 0;
+    } catch (SQLException e) {
+        System.err.println("❌ Error al insertar usuario: " + e.getMessage());
+        return false;
+    }
+}
+
 
    public List<Usuario> obtenerTodos() {
         List<Usuario> usuarios = new ArrayList<>();
@@ -73,25 +94,6 @@ public class UsuarioDAO {
         return null;
     }
 
-    public boolean insertar(Usuario usuario) {
-        String sql = "INSERT INTO usuarios (nombre, apellido, dni, correo, telefono, id_rol) VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection con = Conexion.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
-
-            stmt.setString(1, usuario.getNombre());
-            stmt.setString(2, usuario.getApellido());
-            stmt.setInt(3, usuario.getDni());
-            stmt.setString(4, usuario.getCorreo());
-            stmt.setInt(5, usuario.getTelefono());
-            stmt.setInt(6, usuario.getRol().getId());
-
-            return stmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
 
     public boolean actualizar(Usuario usuario) {
         String sql = "UPDATE usuarios SET nombre = ?, apellido = ?, dni = ?, correo = ?, telefono = ?, id_rol = ? WHERE id = ?";

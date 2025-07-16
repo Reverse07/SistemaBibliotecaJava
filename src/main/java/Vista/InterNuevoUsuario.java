@@ -89,7 +89,7 @@ public class InterNuevoUsuario extends javax.swing.JDialog {
         jLabel_Rol = new JLabel("Rol:");
         jLabel_Rol.setFont(fuente);
         jLabel_Rol.setForeground(colorTexto);
-        jComboBox2 = new JComboBox<>(new String[]{"Administrador", "Bibliotecario", "Invitado"});
+        jComboBox2 = new JComboBox<>(new String[]{"Administrador", "Bibliotecario", "Lector"});
 
         jButton_Guardar = new RoundedButton("Guardar", cargarIcono("guardar.png", 20, 20));
         jButton_Cancelar = new RoundedButton("Cancelar", cargarIcono("cancelarIcono.png", 20, 20));
@@ -323,7 +323,7 @@ public class InterNuevoUsuario extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton_GuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_GuardarActionPerformed
-        // 1. Obtener datos desde los campos
+    // 1. Obtener datos desde los campos
     String nombre = txt_nombre.getText().trim();
     String apellido = txt_apellido.getText().trim();
     String dniStr = txt_DNI.getText().trim();
@@ -332,15 +332,16 @@ public class InterNuevoUsuario extends javax.swing.JDialog {
     String rolSeleccionado = (String) jComboBox2.getSelectedItem();
 
     // 2. Validación de campos vacíos
-    if (nombre.isEmpty() || apellido.isEmpty() || dniStr.isEmpty() || correo.isEmpty() || telefonoStr.isEmpty()) {
+    if (nombre.isEmpty() || apellido.isEmpty() || dniStr.isEmpty() || 
+        correo.isEmpty() || telefonoStr.isEmpty() || rolSeleccionado == null) {
+        
         JOptionPane.showMessageDialog(this, "⚠️ Por favor, complete todos los campos.",
                 "Campos vacíos", JOptionPane.WARNING_MESSAGE);
         return;
     }
 
     // 3. Validación de formato numérico
-    int dni;
-    int telefono;
+    int dni, telefono;
     try {
         dni = Integer.parseInt(dniStr);
     } catch (NumberFormatException e) {
@@ -371,7 +372,20 @@ public class InterNuevoUsuario extends javax.swing.JDialog {
     nuevoUsuario.setDni(dni);
     nuevoUsuario.setCorreo(correo);
     nuevoUsuario.setTelefono(telefono);
-    nuevoUsuario.setRol(new RolesBiblioteca(0, rolSeleccionado)); // Ajusta si usas ID reales
+
+  
+    // Supongamos que tienes:
+RolesBiblioteca rol = new RolesBiblioteca();
+if (rolSeleccionado.equals("Administrador")) {
+    rol.setId(1); // Suponiendo que 1 es el id del rol "Estudiante"
+} else if (rolSeleccionado.equals("Bibliotecario")) {
+    rol.setId(2); // Suponiendo que 2 es el id del rol "Administrador"
+} else if (rolSeleccionado.equals("Lector")){
+    rol.setId(3);
+}
+rol.setNombre(rolSeleccionado);
+nuevoUsuario.setRol(rol);
+
 
     // 6. Insertar en base de datos
     UsuarioDAO usuarioDAO = new UsuarioDAO();
@@ -379,7 +393,7 @@ public class InterNuevoUsuario extends javax.swing.JDialog {
 
     if (exito) {
         JOptionPane.showMessageDialog(this, "✅ Usuario registrado correctamente.");
-        dispose(); // Cierra la ventana
+        dispose(); // Cierra la ventana actual
     } else {
         JOptionPane.showMessageDialog(this, "❌ Error al guardar el usuario.",
                 "Error", JOptionPane.ERROR_MESSAGE);

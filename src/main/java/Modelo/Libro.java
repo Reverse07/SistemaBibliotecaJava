@@ -1,4 +1,3 @@
-
 package Modelo;
 
 import java.util.Date;
@@ -30,7 +29,6 @@ public class Libro {
         this.descripcion = descripcion;
     }
 
-  
     public int getId() {
         return id;
     }
@@ -101,5 +99,10 @@ public class Libro {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    @Override
+    public String toString() {
+        return titulo + " — " + autor;
     }
 }

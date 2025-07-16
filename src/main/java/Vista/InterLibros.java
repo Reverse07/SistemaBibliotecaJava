@@ -1,5 +1,6 @@
 package Vista;
 
+import Controlador.LibroDAO;
 import Modelo.Libro;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -27,7 +28,7 @@ public class InterLibros extends javax.swing.JPanel {
 
     private void configurarInterfaz() {
         setLayout(new BorderLayout());
-         setBackground(new Color(227, 242, 253));
+        setBackground(new Color(227, 242, 253));
 
         // Título
         jLabel1 = new JLabel("📚 Catálogo de Libros", JLabel.CENTER);
@@ -66,28 +67,39 @@ public class InterLibros extends javax.swing.JPanel {
 
         agregarEventos();
     }
-    
-    private ImageIcon escalarIcono(String ruta, int ancho, int alto) {
-    URL url = getClass().getResource(ruta);
-    if (url != null) {
-        ImageIcon icon = new ImageIcon(url);
-        Image imagenEscalada = icon.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
-        return new ImageIcon(imagenEscalada);
-    } else {
-        System.err.println("❌ Icono no encontrado: " + ruta);
-        return null;
-    }
-}
 
+    private ImageIcon escalarIcono(String ruta, int ancho, int alto) {
+        URL url = getClass().getResource(ruta);
+        if (url != null) {
+            ImageIcon icon = new ImageIcon(url);
+            Image imagenEscalada = icon.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+            return new ImageIcon(imagenEscalada);
+        } else {
+            System.err.println("❌ Icono no encontrado: " + ruta);
+            return null;
+        }
+    }
 
     private void agregarEventos() {
         jButtonNuevo.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Evento Nuevo libro (por implementar)");
+            java.awt.Frame parentFrame = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
+            InterNuevoLibroBiblio dialog = new InterNuevoLibroBiblio(parentFrame, true);
+            dialog.setVisible(true);
+
+            // Recargar el carrusel después de cerrar el diálogo (opcional)
+            remove(jPanel2);
+            jPanel2 = new CarruselLibros(this);
+            add(jPanel2, BorderLayout.CENTER);
+            revalidate();
+            repaint();
         });
 
         jButton_Editar.addActionListener(e -> {
             if (libroSeleccionado != null) {
-                JOptionPane.showMessageDialog(this, "Editar: " + libroSeleccionado.getTitulo());
+                java.awt.Frame parentFrame = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
+                InterNuevoLibroBiblio dialog = new InterNuevoLibroBiblio(parentFrame, true);
+                dialog.setLibroAEditar(libroSeleccionado);  // clave para edición
+                dialog.setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(this, "Selecciona un libro para editar");
             }
@@ -97,7 +109,20 @@ public class InterLibros extends javax.swing.JPanel {
             if (libroSeleccionado != null) {
                 int confirm = JOptionPane.showConfirmDialog(this, "¿Eliminar el libro seleccionado?", "Confirmar", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
-                    JOptionPane.showMessageDialog(this, "Libro eliminado (simulado)");
+                    boolean eliminado = new LibroDAO().eliminar(libroSeleccionado.getId());
+                    if (eliminado) {
+                        JOptionPane.showMessageDialog(this, "✅ Libro eliminado correctamente");
+                        libroSeleccionado = null;
+
+                        // Refrescar carrusel
+                        remove(jPanel2);
+                        jPanel2 = new CarruselLibros(this);
+                        add(jPanel2, BorderLayout.CENTER);
+                        revalidate();
+                        repaint();
+                    } else {
+                        JOptionPane.showMessageDialog(this, "❌ Error al eliminar el libro");
+                    }
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Selecciona un libro para eliminar");
@@ -117,7 +142,7 @@ public class InterLibros extends javax.swing.JPanel {
         this.libroSeleccionado = libro;
         JOptionPane.showMessageDialog(this,
                 "<html><h3>" + libro.getTitulo() + "</h3>"
-                + "<p>Autor: " + libro.getAutor() + "</p>"
+                + "<p>ISBN: " + libro.getIsbn() + "</p>"
                 + "<p>Año: " + libro.getAnio_publicacion() + "</p></html>",
                 "📖 Detalles del Libro", JOptionPane.INFORMATION_MESSAGE);
     }

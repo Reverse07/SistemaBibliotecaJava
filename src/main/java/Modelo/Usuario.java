@@ -79,4 +79,9 @@ public class Usuario {
     public void setRol(RolesBiblioteca rol) {
         this.rol = rol;
     }
+
+    @Override
+public String toString() {
+    return nombre + " " + apellido;  // O lo que quieras mostrar
+}
 }

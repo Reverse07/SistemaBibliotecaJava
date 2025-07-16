@@ -1,8 +1,10 @@
-
 package Vista;
 
+import Controlador.DetallePrestamoDAO;
+import Controlador.LibroDAO;
 import Controlador.PrestamoDAO;
 import Controlador.UsuarioDAO;
+import Modelo.Libro;
 import Modelo.Prestamo;
 import Modelo.Usuario;
 import com.formdev.flatlaf.json.ParseException;
@@ -32,12 +34,14 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-
 public class InterEditarPrestamo extends javax.swing.JDialog {
-private JTextField txtFechaPrestamo, txtFechaDevolucion;
+
+    private JTextField txtFechaPrestamo, txtFechaDevolucion;
     private JComboBox<Usuario> comboUsuario;
     private JComboBox<String> comboEstado;
     private JButton btnGuardar, btnCancelar;
+    private JComboBox<Libro> comboLibro;
+    private List<Libro> listaLibros = new LibroDAO().obtenerTodos(); // o todos, según tu lógica
 
     private Prestamo prestamoOriginal;
     private List<Usuario> listaUsuarios = new UsuarioDAO().obtenerTodos(); // asegúrate de tener este DAO
@@ -53,7 +57,17 @@ private JTextField txtFechaPrestamo, txtFechaDevolucion;
 
     private void initComponents2() {
         setLayout(new BorderLayout());
-        JPanel panel = new JPanel(new GridBagLayout());
+        JPanel panel = new JPanel(new GridBagLayout()) {
+            Image bg = new ImageIcon(getClass().getResource("/img/fondoLibreria.jpg")).getImage();
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(bg, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+        panel.setOpaque(false);
+
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -65,39 +79,64 @@ private JTextField txtFechaPrestamo, txtFechaDevolucion;
 
         // Etiquetas
         JLabel lblUsuario = new JLabel("👤 Usuario:");
-        lblUsuario.setFont(fuente); lblUsuario.setForeground(colorTexto);
+        lblUsuario.setFont(fuente);
+        lblUsuario.setForeground(colorTexto);
         comboUsuario = new JComboBox<>();
-        for (Usuario u : listaUsuarios) comboUsuario.addItem(u);
+        for (Usuario u : listaUsuarios) {
+            comboUsuario.addItem(u);
+        }
 
         JLabel lblFechaPrestamo = new JLabel("📅 Fecha Préstamo:");
-        lblFechaPrestamo.setFont(fuente); lblFechaPrestamo.setForeground(colorTexto);
+        lblFechaPrestamo.setFont(fuente);
+        lblFechaPrestamo.setForeground(colorTexto);
         txtFechaPrestamo = new JTextField();
 
         JLabel lblFechaDevolucion = new JLabel("📅 Fecha Devolución:");
-        lblFechaDevolucion.setFont(fuente); lblFechaDevolucion.setForeground(colorTexto);
+        lblFechaDevolucion.setFont(fuente);
+        lblFechaDevolucion.setForeground(colorTexto);
         txtFechaDevolucion = new JTextField();
 
         JLabel lblEstado = new JLabel("📌 Estado:");
-        lblEstado.setFont(fuente); lblEstado.setForeground(colorTexto);
+        lblEstado.setFont(fuente);
+        lblEstado.setForeground(colorTexto);
         comboEstado = new JComboBox<>(new String[]{"Activo", "Devuelto"});
 
+        JLabel lblLibro = new JLabel("📚 Libro:");
+        lblLibro.setFont(fuente);
+        lblLibro.setForeground(colorTexto);
+
+        comboLibro = new JComboBox<>();
+        for (Libro libro : listaLibros) {
+            comboLibro.addItem(libro);
+        }
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        panel.add(lblLibro, gbc);
+        gbc.gridx = 1;
+        panel.add(comboLibro, gbc);
+
         // Posicionamiento
-        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         panel.add(lblUsuario, gbc);
         gbc.gridx = 1;
         panel.add(comboUsuario, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         panel.add(lblFechaPrestamo, gbc);
         gbc.gridx = 1;
         panel.add(txtFechaPrestamo, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 2;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
         panel.add(lblFechaDevolucion, gbc);
         gbc.gridx = 1;
         panel.add(txtFechaDevolucion, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 3;
+        gbc.gridx = 0;
+        gbc.gridy = 3;
         panel.add(lblEstado, gbc);
         gbc.gridx = 1;
         panel.add(comboEstado, gbc);
@@ -133,51 +172,73 @@ private JTextField txtFechaPrestamo, txtFechaDevolucion;
         add(panelBotones, BorderLayout.SOUTH);
     }
 
-    private void cargarDatos() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+private void cargarDatos() {
+   SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-        txtFechaPrestamo.setText(sdf.format(prestamoOriginal.getFechaPrestamo()));
-        txtFechaDevolucion.setText(sdf.format(prestamoOriginal.getFechaDevolucion()));
-        comboEstado.setSelectedItem(prestamoOriginal.getEstado());
+    txtFechaPrestamo.setText(sdf.format(prestamoOriginal.getFechaPrestamo()));
+    txtFechaDevolucion.setText(sdf.format(prestamoOriginal.getFechaDevolucion()));
+    comboEstado.setSelectedItem(prestamoOriginal.getEstado());
 
-        // Seleccionar usuario en combo
-        for (int i = 0; i < comboUsuario.getItemCount(); i++) {
-            Usuario u = comboUsuario.getItemAt(i);
-            if (u.getId() == prestamoOriginal.getUsuario().getId()) {
-                comboUsuario.setSelectedIndex(i);
+    // Seleccionar usuario en combo
+    for (int i = 0; i < comboUsuario.getItemCount(); i++) {
+        Usuario u = comboUsuario.getItemAt(i);
+        if (u.getId() == prestamoOriginal.getUsuario().getId()) {
+            comboUsuario.setSelectedIndex(i);
+            break;
+        }
+    }
+
+    // Obtener el libro desde DetallePrestamoDAO
+    DetallePrestamoDAO detalleDAO = new DetallePrestamoDAO();
+    List<Libro> librosPrestamo = detalleDAO.obtenerLibrosPorPrestamo(prestamoOriginal.getId());
+
+    if (!librosPrestamo.isEmpty()) {
+        Libro libroPrestado = librosPrestamo.get(0); // suponiendo solo 1 libro por préstamo
+        for (int i = 0; i < comboLibro.getItemCount(); i++) {
+            Libro l = comboLibro.getItemAt(i);
+            if (l.getId() == libroPrestado.getId()) {
+                comboLibro.setSelectedIndex(i);
                 break;
             }
         }
     }
-
+}
     private void guardarCambios() throws java.text.ParseException {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date fechaPrestamo = sdf.parse(txtFechaPrestamo.getText());
-            Date fechaDevolucion = sdf.parse(txtFechaDevolucion.getText());
-            Usuario usuario = (Usuario) comboUsuario.getSelectedItem();
-            String estado = (String) comboEstado.getSelectedItem();
+    try {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date fechaPrestamo = sdf.parse(txtFechaPrestamo.getText().trim());
+        Date fechaDevolucion = sdf.parse(txtFechaDevolucion.getText().trim());
+        Usuario usuario = (Usuario) comboUsuario.getSelectedItem();
+        Libro libroSeleccionado = (Libro) comboLibro.getSelectedItem();
+        String estado = (String) comboEstado.getSelectedItem();
 
-            Prestamo prestamoEditado = new Prestamo();
-            prestamoEditado.setId(prestamoOriginal.getId());
-            prestamoEditado.setUsuario(usuario);
-            prestamoEditado.setFechaPrestamo(fechaPrestamo);
-            prestamoEditado.setFechaDevolucion(fechaDevolucion);
-            prestamoEditado.setEstado(estado);
-
-            boolean actualizado = new PrestamoDAO().actualizar(prestamoEditado);
-
-            if (actualizado) {
-                JOptionPane.showMessageDialog(this, "✅ Préstamo actualizado correctamente.");
-                dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "❌ Error al actualizar el préstamo.");
-            }
-
-        } catch (ParseException e) {
-            JOptionPane.showMessageDialog(this, "❌ Formato de fecha inválido. Usa yyyy-MM-dd.");
+        if (usuario == null || libroSeleccionado == null || estado == null ||
+            txtFechaPrestamo.getText().isEmpty() || txtFechaDevolucion.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "❗ Todos los campos deben estar completos.");
+            return;
         }
+
+        Prestamo prestamoEditado = new Prestamo();
+        prestamoEditado.setId(prestamoOriginal.getId());
+        prestamoEditado.setUsuario(usuario);
+        prestamoEditado.setFechaPrestamo(fechaPrestamo);
+        prestamoEditado.setFechaDevolucion(fechaDevolucion);
+        prestamoEditado.setEstado(estado);
+
+        boolean actualizado = new PrestamoDAO().actualizar(prestamoEditado);
+
+        if (actualizado) {
+            JOptionPane.showMessageDialog(this, "✅ Préstamo actualizado correctamente.");
+            dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "❌ Error al actualizar el préstamo.");
+        }
+
+    } catch (ParseException e) {
+        JOptionPane.showMessageDialog(this, "❌ Formato de fecha inválido. Usa yyyy-MM-dd.");
     }
+}
+
 
     private ImageIcon cargarIcono(String archivo, int w, int h) {
         try {
@@ -188,7 +249,6 @@ private JTextField txtFechaPrestamo, txtFechaDevolucion;
             return null;
         }
     }
-
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -246,9 +306,6 @@ private JTextField txtFechaPrestamo, txtFechaDevolucion;
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
-    
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> jComboBox1;

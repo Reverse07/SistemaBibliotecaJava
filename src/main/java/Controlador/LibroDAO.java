@@ -145,6 +145,122 @@ public class LibroDAO {
         }
         return total;
     }
+    
+    public int contarStockBajo(int limite) {
+    int cantidad = 0;
+    String sql = "SELECT COUNT(*) FROM libros WHERE stock <= ?";
+
+    try (Connection conn = Conexion.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setInt(1, limite);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            cantidad = rs.getInt(1);
+        }
+
+    } catch (SQLException e) {
+        System.err.println("❌ Error al contar libros con stock bajo: " + e.getMessage());
+    }
+    return cantidad;
+}
+    
+    public Libro buscarPorISBN(String isbn) {
+    String sql = "SELECT l.*, c.nombre AS nombre_categoria FROM libros l "
+               + "LEFT JOIN categorias c ON l.id_categoria = c.id "
+               + "WHERE l.isbn = ?";
+
+    try (Connection con = Conexion.getConnection();
+         PreparedStatement stmt = con.prepareStatement(sql)) {
+
+        stmt.setString(1, isbn);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            Categoria c = new Categoria(rs.getInt("id_categoria"), rs.getString("nombre_categoria"));
+            return new Libro(
+                rs.getInt("id"),
+                rs.getString("titulo"),
+                rs.getString("autor"),
+                rs.getInt("anio_publicacion"),
+                rs.getString("isbn"),
+                rs.getInt("stock"),
+                rs.getString("rutaImagen"),
+                c,
+                rs.getString("descripcion")
+            );
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+    public List<Libro> buscarPorTitulo(String titulo) {
+    List<Libro> libros = new ArrayList<>();
+    String sql = "SELECT l.*, c.nombre AS nombre_categoria FROM libros l "
+               + "LEFT JOIN categorias c ON l.id_categoria = c.id "
+               + "WHERE LOWER(l.titulo) LIKE ?";
+
+    try (Connection con = Conexion.getConnection();
+         PreparedStatement stmt = con.prepareStatement(sql)) {
+
+        stmt.setString(1, "%" + titulo.toLowerCase() + "%");
+        ResultSet rs = stmt.executeQuery();
+
+        while (rs.next()) {
+            Categoria c = new Categoria(rs.getInt("id_categoria"), rs.getString("nombre_categoria"));
+            Libro l = new Libro(
+                rs.getInt("id"),
+                rs.getString("titulo"),
+                rs.getString("autor"),
+                rs.getInt("anio_publicacion"),
+                rs.getString("isbn"),
+                rs.getInt("stock"),
+                rs.getString("rutaImagen"),
+                c,
+                rs.getString("descripcion")
+            );
+            libros.add(l);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return libros;
+}
+    
+    public List<Libro> buscarPorCategoria(String nombreCategoria) {
+    List<Libro> libros = new ArrayList<>();
+    String sql = "SELECT l.*, c.nombre AS nombre_categoria FROM libros l "
+               + "JOIN categorias c ON l.id_categoria = c.id "
+               + "WHERE LOWER(c.nombre) = ?";
+
+    try (Connection con = Conexion.getConnection();
+         PreparedStatement stmt = con.prepareStatement(sql)) {
+
+        stmt.setString(1, nombreCategoria.toLowerCase());
+        ResultSet rs = stmt.executeQuery();
+
+        while (rs.next()) {
+            Categoria c = new Categoria(rs.getInt("id_categoria"), rs.getString("nombre_categoria"));
+            Libro l = new Libro(
+                rs.getInt("id"),
+                rs.getString("titulo"),
+                rs.getString("autor"),
+                rs.getInt("anio_publicacion"),
+                rs.getString("isbn"),
+                rs.getInt("stock"),
+                rs.getString("rutaImagen"),
+                c,
+                rs.getString("descripcion")
+            );
+            libros.add(l);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return libros;
+}
 }
 
 

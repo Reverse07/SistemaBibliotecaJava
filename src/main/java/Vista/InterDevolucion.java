@@ -102,16 +102,16 @@ private DefaultTableModel modeloTabla;
     }
 
     private void cargarTabla() {
-        modeloTabla.setRowCount(0);
-        List<Devolucion> devoluciones = new DevolucionDAO().obtenerTodas();
-        for (Devolucion d : devoluciones) {
-            modeloTabla.addRow(new Object[]{
-                d.getId(),
-                d.getPrestamo().getId(),
-                d.getFechaDevolucion(),
-                d.getObservaciones()
-            });
-        }
+     modeloTabla.setRowCount(0);
+    List<Devolucion> devoluciones = new DevolucionDAO().obtenerTodas();
+    for (Devolucion d : devoluciones) {
+        modeloTabla.addRow(new Object[]{
+            d.getId(),
+            d.getPrestamo().getId(),
+            d.getFechaDevolucion(),
+            d.getObservaciones()
+        });
+    }
     }
 
     private void agregarEventos() {
@@ -143,7 +143,7 @@ private DefaultTableModel modeloTabla;
 
         jButton_nuevo.addActionListener(e -> {
             Frame parent = (Frame) SwingUtilities.getWindowAncestor(InterDevolucion.this);
-            InterNuevoDevolucion dialogo = new InterNuevoDevolucion(parent, true);
+            InterNuevoDevolucion dialogo = new InterNuevoDevolucion(parent, true, InterDevolucion.this);
             dialogo.setVisible(true);
             cargarTabla();
         });

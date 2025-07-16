@@ -1,6 +1,8 @@
 package Vista;
 
+import Controlador.DetallePrestamoDAO;
 import Controlador.PrestamoDAO;
+import Modelo.Libro;
 import Modelo.Prestamo;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -11,6 +13,7 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Image;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -40,39 +43,35 @@ public class InterPrestamo extends javax.swing.JPanel {
     }
 
     private void initComponents2() {
-        setLayout(new BorderLayout());
-        setBackground(new Color(227, 242, 253)); // azul claro bibliotecario
+       setLayout(new BorderLayout());
+        setBackground(new Color(227, 242, 253));
 
-        // Título
         jLabel1 = new JLabel("📖 Gestión de Préstamos", SwingConstants.CENTER);
         jLabel1.setFont(new Font("Segoe UI", Font.BOLD, 24));
         jLabel1.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
         add(jLabel1, BorderLayout.NORTH);
 
-        // Panel de la tabla
         jPanel1 = new JPanel(new BorderLayout());
         jPanel1.setBackground(new Color(227, 242, 253));
 
         tablaPrestamos = new JTable();
         tablaPrestamos.setModel(new DefaultTableModel(
-                new Object[][]{},
-                new String[]{"ID", "Usuario", "Fecha Préstamo", "Fecha Devolución", "Estado"}
+            new Object[][]{},
+            new String[]{"ID", "Usuario", "Fecha Préstamo", "Fecha Devolución", "Estado", "Libros"}
         ));
         tablaPrestamos.setRowHeight(25);
         tablaPrestamos.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
-        // Estilo de encabezado
         JTableHeader header = tablaPrestamos.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 14));
         header.setBackground(new Color(21, 101, 192));
         header.setForeground(Color.WHITE);
 
-        // Alternancia de filas
         tablaPrestamos.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value,
-                    boolean isSelected, boolean hasFocus,
-                    int row, int column) {
+                                                           boolean isSelected, boolean hasFocus,
+                                                           int row, int column) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 if (!isSelected) {
                     c.setBackground(row % 2 == 0 ? Color.WHITE : new Color(232, 240, 254));
@@ -87,14 +86,12 @@ public class InterPrestamo extends javax.swing.JPanel {
         jPanel1.add(jScrollPane2, BorderLayout.CENTER);
         add(jPanel1, BorderLayout.CENTER);
 
-        // Panel de botones
-        // Panel botones
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(getBackground());
 
         jButton_Nuevo = new Vista.RoundedButton("Nuevo", cargarIcono("nuevo.png", 20, 20));
         jButton_Actualizar = new Vista.RoundedButton("Actualizar", cargarIcono("actualizar.png", 20, 20));
-        jButton_Editar = new Vista.RoundedButton("Editar", cargarIcono("editar.png",20,20));
+        jButton_Editar = new Vista.RoundedButton("Editar", cargarIcono("editar.png", 20, 20));
         jButton_Eliminar = new Vista.RoundedButton("Eliminar", cargarIcono("eliminar.png", 20, 20));
 
         panelBotones.add(jButton_Nuevo);
@@ -104,6 +101,11 @@ public class InterPrestamo extends javax.swing.JPanel {
 
         add(panelBotones, BorderLayout.SOUTH);
     }
+    
+       private void configurarTabla() {
+        tablaPrestamos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    }
+
     
 
     private JButton crearBoton(String texto, String icono) {
@@ -129,26 +131,31 @@ public class InterPrestamo extends javax.swing.JPanel {
         return boton;
     }
 
-    private void configurarTabla() {
-        tablaPrestamos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    }
 
     private void cargarTablaPrestamos() {
-        modeloTabla.setRowCount(0);
+      modeloTabla.setRowCount(0);
         List<Prestamo> prestamos = prestamoDAO.obtenerTodos();
+        DetallePrestamoDAO detalleDAO = new DetallePrestamoDAO();
+
         for (Prestamo p : prestamos) {
+            List<Libro> libros = detalleDAO.obtenerLibrosPorPrestamo(p.getId());
+            String nombresLibros = libros.stream()
+                .map(Libro::getTitulo)
+                .collect(Collectors.joining(", "));
+
             modeloTabla.addRow(new Object[]{
                 p.getId(),
                 p.getUsuario().getNombre() + " " + p.getUsuario().getApellido(),
                 p.getFechaPrestamo(),
                 p.getFechaDevolucion(),
-                p.getEstado()
+                p.getEstado(),
+                nombresLibros
             });
         }
     }
 
     private void agregarEventos() {
-        jButton_Actualizar.addActionListener(e -> {
+    jButton_Actualizar.addActionListener(e -> {
             cargarTablaPrestamos();
             JOptionPane.showMessageDialog(this, "🔄 Tabla actualizada.");
         });
@@ -180,24 +187,44 @@ public class InterPrestamo extends javax.swing.JPanel {
             }
         });
 
-        jButton_Eliminar.addActionListener(e -> {
-            int fila = tablaPrestamos.getSelectedRow();
-            if (fila != -1) {
-                int id = (int) modeloTabla.getValueAt(fila, 0);
-                int confirm = JOptionPane.showConfirmDialog(this,
-                        "¿Eliminar préstamo con ID: " + id + "?",
-                        "Confirmar", JOptionPane.YES_NO_OPTION);
-                if (confirm == JOptionPane.YES_OPTION) {
-                    // Aquí iría el método prestamoDAO.eliminar(id);
-                    JOptionPane.showMessageDialog(this, "🗑️ Eliminación simulada.\nFalta implementar en PrestamoDAO.");
-                    cargarTablaPrestamos();
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "⚠️ Selecciona un préstamo a eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            }
-        });
-    }
+  jButton_Eliminar.addActionListener(e -> {
+    int fila = tablaPrestamos.getSelectedRow();
+    if (fila != -1) {
+        int id = (int) modeloTabla.getValueAt(fila, 0);
 
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "¿Eliminar el préstamo con ID: " + id + "?",
+                "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            // Primero elimina los detalles del préstamo
+            DetallePrestamoDAO detalleDAO = new DetallePrestamoDAO();
+            boolean detallesEliminados = detalleDAO.eliminarPorPrestamoId(id);
+
+            if (!detallesEliminados) {
+                JOptionPane.showMessageDialog(this, "❌ No se pudieron eliminar los detalles del préstamo.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Luego elimina el préstamo principal
+            boolean prestamoEliminado = prestamoDAO.eliminar(id);
+
+            if (prestamoEliminado) {
+                JOptionPane.showMessageDialog(this, "✅ Préstamo eliminado correctamente.");
+                cargarTablaPrestamos();  // Recarga la tabla actualizada
+            } else {
+                JOptionPane.showMessageDialog(this, "❌ No se pudo eliminar el préstamo.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    } else {
+        JOptionPane.showMessageDialog(this, "⚠️ Selecciona un préstamo para eliminar.",
+                "Advertencia", JOptionPane.WARNING_MESSAGE);
+    }
+});
+      }
+    
     private ImageIcon cargarIcono(String nombreArchivo, int ancho, int alto) {
         try {
             ImageIcon icono = new ImageIcon(getClass().getResource("/img/" + nombreArchivo));
