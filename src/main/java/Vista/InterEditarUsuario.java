@@ -18,6 +18,7 @@ import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -26,6 +27,7 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -34,6 +36,7 @@ import javax.swing.SwingConstants;
 
 public class InterEditarUsuario extends javax.swing.JDialog {
 
+    private List<RolesBiblioteca> listaRoles = new ArrayList<>();
     private Usuario usuarioOriginal;
 
     public InterEditarUsuario(Frame parent, Usuario usuario) {
@@ -42,11 +45,13 @@ public class InterEditarUsuario extends javax.swing.JDialog {
         setSize(500, 400);
         setLocationRelativeTo(parent);
         initComponents2();
-        cargarDatos();
+        cargarRoles(); // Primero se cargan los roles
+        cargarDatos(); // Luego se cargan los datos del usuario
     }
 
     private void initComponents2() {
         setLayout(new BorderLayout());
+
         JPanel panel = new JPanel(new GridBagLayout()) {
             Image bg = new ImageIcon(getClass().getResource("/img/fondoLibreria.jpg")).getImage();
 
@@ -56,6 +61,7 @@ public class InterEditarUsuario extends javax.swing.JDialog {
                 g.drawImage(bg, 0, 0, getWidth(), getHeight(), this);
             }
         };
+
         panel.setOpaque(false);
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
@@ -66,78 +72,34 @@ public class InterEditarUsuario extends javax.swing.JDialog {
         Font fuente = new Font("Segoe UI", Font.BOLD, 15);
         Color colorTexto = new Color(30, 30, 30);
 
-        // Componentes
-        JLabel lblNombre = new JLabel("Nombre:");
-        lblNombre.setFont(fuente);
-        lblNombre.setForeground(colorTexto);
         jTextField_nombre = new JTextField();
-
-        JLabel lblApellido = new JLabel("Apellido:");
-        lblApellido.setFont(fuente);
-        lblApellido.setForeground(colorTexto);
         jTextField_apellido = new JTextField();
-
-        JLabel lblDNI = new JLabel("DNI:");
-        lblDNI.setFont(fuente);
-        lblDNI.setForeground(colorTexto);
         jTextField_dni = new JTextField();
-
-        JLabel lblCorreo = new JLabel("Correo:");
-        lblCorreo.setFont(fuente);
-        lblCorreo.setForeground(colorTexto);
         jTextField_correo = new JTextField();
-
-        JLabel lblTelefono = new JLabel("Teléfono:");
-        lblTelefono.setFont(fuente);
-        lblTelefono.setForeground(colorTexto);
         jTextField_telefono = new JTextField();
+        jComboBox1 = new JComboBox<>(); // Se usa JComboBox<String>, pero se llena con nombres
 
-        JLabel lblRol = new JLabel("Rol:");
-        lblRol.setFont(fuente);
-        lblRol.setForeground(colorTexto);
-        jComboBox3 = new JComboBox<>(new String[]{"Administrador", "Usuario", "Invitado"}); // Puedes cargar roles dinámicamente
+        String[] labels = {"Nombre:", "Apellido:", "DNI:", "Correo:", "Teléfono:", "Rol:"};
+        JComponent[] fields = {
+            jTextField_nombre, jTextField_apellido, jTextField_dni,
+            jTextField_correo, jTextField_telefono, jComboBox1
+        };
 
-        // Posicionar
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel.add(lblNombre, gbc);
-        gbc.gridx = 1;
-        panel.add(jTextField_nombre, gbc);
+        for (int i = 0; i < labels.length; i++) {
+            JLabel label = new JLabel(labels[i]);
+            label.setFont(fuente);
+            label.setForeground(colorTexto);
+            gbc.gridx = 0;
+            gbc.gridy = i;
+            panel.add(label, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        panel.add(lblApellido, gbc);
-        gbc.gridx = 1;
-        panel.add(jTextField_apellido, gbc);
+            gbc.gridx = 1;
+            panel.add(fields[i], gbc);
+        }
 
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        panel.add(lblDNI, gbc);
-        gbc.gridx = 1;
-        panel.add(jTextField_dni, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        panel.add(lblCorreo, gbc);
-        gbc.gridx = 1;
-        panel.add(jTextField_correo, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        panel.add(lblTelefono, gbc);
-        gbc.gridx = 1;
-        panel.add(jTextField_telefono, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        panel.add(lblRol, gbc);
-        gbc.gridx = 1;
-        panel.add(jComboBox3, gbc);
-
-        // Botones
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        jButton_Guardar = new RoundedButton("Guardar", cargarIcono("guardar.png", 20, 20));
-        jButton_Cancelar = new RoundedButton("Cancelar", cargarIcono("cancelarIcono.png", 20, 20));
+        jButton_Guardar = new JButton("Guardar");
+        jButton_Cancelar = new JButton("Cancelar");
 
         for (JButton b : new JButton[]{jButton_Guardar, jButton_Cancelar}) {
             b.setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -145,8 +107,6 @@ public class InterEditarUsuario extends javax.swing.JDialog {
             b.setForeground(Color.WHITE);
             b.setFocusPainted(false);
             b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            b.setHorizontalTextPosition(SwingConstants.RIGHT);
-            b.setIconTextGap(10);
         }
 
         jButton_Guardar.addActionListener(e -> guardarCambios());
@@ -159,13 +119,32 @@ public class InterEditarUsuario extends javax.swing.JDialog {
         add(panelBotones, BorderLayout.SOUTH);
     }
 
+    private void cargarRoles() {
+        listaRoles.clear();
+        jComboBox1.removeAllItems();
+
+        listaRoles.add(new RolesBiblioteca(1, "Administrador"));
+        listaRoles.add(new RolesBiblioteca(2, "Bibliotecario"));
+        listaRoles.add(new RolesBiblioteca(3, "Lector"));
+
+        for (RolesBiblioteca rol : listaRoles) {
+            jComboBox1.addItem(rol.getNombre()); // Solo nombres, pero guardamos los roles aparte
+        }
+    }
+
     private void cargarDatos() {
         jTextField_nombre.setText(usuarioOriginal.getNombre());
         jTextField_apellido.setText(usuarioOriginal.getApellido());
         jTextField_dni.setText(String.valueOf(usuarioOriginal.getDni()));
         jTextField_correo.setText(usuarioOriginal.getCorreo());
         jTextField_telefono.setText(String.valueOf(usuarioOriginal.getTelefono()));
-        jComboBox3.setSelectedItem(usuarioOriginal.getRol().getNombre());
+
+        for (int i = 0; i < listaRoles.size(); i++) {
+            if (listaRoles.get(i).getId() == usuarioOriginal.getRol().getId()) {
+                jComboBox1.setSelectedIndex(i);
+                break;
+            }
+        }
     }
 
     private void guardarCambios() {
@@ -174,7 +153,6 @@ public class InterEditarUsuario extends javax.swing.JDialog {
         String dniStr = jTextField_dni.getText().trim();
         String correo = jTextField_correo.getText().trim();
         String telefonoStr = jTextField_telefono.getText().trim();
-        String rol = (String) jComboBox3.getSelectedItem();
 
         if (nombre.isEmpty() || apellido.isEmpty() || dniStr.isEmpty() || correo.isEmpty() || telefonoStr.isEmpty()) {
             JOptionPane.showMessageDialog(this, "⚠️ Por favor, complete todos los campos.", "Campos vacíos", JOptionPane.WARNING_MESSAGE);
@@ -184,22 +162,24 @@ public class InterEditarUsuario extends javax.swing.JDialog {
         int dni, telefono;
         try {
             dni = Integer.parseInt(dniStr);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "❌ El DNI debe ser numérico.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        try {
             telefono = Integer.parseInt(telefonoStr);
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "❌ El teléfono debe ser numérico.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "❌ DNI y Teléfono deben ser numéricos.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         if (!correo.matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$")) {
-            JOptionPane.showMessageDialog(this, "❌ Ingrese un correo válido.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "❌ Correo inválido.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
+        int selectedIndex = jComboBox1.getSelectedIndex();
+        if (selectedIndex < 0) {
+            JOptionPane.showMessageDialog(this, "❌ Seleccione un rol válido.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        RolesBiblioteca rolSeleccionado = listaRoles.get(selectedIndex);
 
         Usuario usuarioEditado = new Usuario();
         usuarioEditado.setId(usuarioOriginal.getId());
@@ -208,7 +188,7 @@ public class InterEditarUsuario extends javax.swing.JDialog {
         usuarioEditado.setDni(dni);
         usuarioEditado.setCorreo(correo);
         usuarioEditado.setTelefono(telefono);
-        usuarioEditado.setRol(new RolesBiblioteca(0, rol)); // Ajusta si manejas ID reales
+        usuarioEditado.setRol(rolSeleccionado);
 
         boolean actualizado = new UsuarioDAO().actualizar(usuarioEditado);
 
@@ -247,7 +227,7 @@ public class InterEditarUsuario extends javax.swing.JDialog {
         jLabel_correo = new javax.swing.JLabel();
         jTextField_correo = new javax.swing.JTextField();
         jLabel_telefono = new javax.swing.JLabel();
-        jComboBox3 = new javax.swing.JComboBox<>();
+        jComboBox1 = new javax.swing.JComboBox<>();
         jButton_Cancelar = new javax.swing.JButton();
         jButton_Guardar = new javax.swing.JButton();
 
@@ -291,8 +271,8 @@ public class InterEditarUsuario extends javax.swing.JDialog {
         jLabel_telefono.setText("Telefono:");
         jPanel1.add(jLabel_telefono, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 240, -1, -1));
 
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        jPanel1.add(jComboBox3, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 280, 210, 20));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jPanel1.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 280, 210, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 400, 300));
 
@@ -318,7 +298,7 @@ public class InterEditarUsuario extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton_Cancelar;
     private javax.swing.JButton jButton_Guardar;
-    private javax.swing.JComboBox<String> jComboBox3;
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel_DNI;
     private javax.swing.JLabel jLabel_apellido;

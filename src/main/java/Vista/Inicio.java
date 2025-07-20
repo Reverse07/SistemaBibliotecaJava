@@ -39,6 +39,7 @@ import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.Box;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 public class Inicio extends javax.swing.JFrame {
@@ -74,7 +75,8 @@ public class Inicio extends javax.swing.JFrame {
         iconos.put("Usuarios", "usuarios.png");
         iconos.put("Libros", "libros.png");
         iconos.put("Reportes", "reportes.png");
-        iconos.put("Busqueda", "Buscar.png"); // Asegúrate de tener buscar.png en /img/
+        iconos.put("Busqueda", "Buscar.png");
+        iconos.put("Salir", "salir.png"); 
 
     }
 
@@ -93,7 +95,7 @@ public class Inicio extends javax.swing.JFrame {
         tituloMenu.setBorder(BorderFactory.createEmptyBorder(20, 10, 30, 10));
         jPanelMenu.add(tituloMenu);
 
-        String[] opciones = {"Principal", "Préstamos", "Devoluciones", "Usuarios", "Libros", "Reportes","Busqueda"};
+        String[] opciones = {"Principal", "Préstamos", "Devoluciones", "Usuarios", "Libros", "Reportes", "Busqueda", "Salir"};
         for (String opcion : opciones) {
             jPanelMenu.add(crearBotonMenu(opcion));
         }
@@ -118,11 +120,13 @@ public class Inicio extends javax.swing.JFrame {
                 case "Usuarios" ->
                     jPanelContenido.add(new InterUsuario(), opcion);
                 case "Libros" ->
-                    jPanelContenido.add(new InterLibros(), opcion);                    
+                    jPanelContenido.add(new InterLibros(), opcion);
                 case "Reportes" ->
-                        jPanelContenido.add(new InterReportes(), opcion);              
+                    jPanelContenido.add(new InterReportes(), opcion);
                 case "Busqueda" ->
-                            jPanelContenido.add(new InterBusquedaAvanzada(), opcion);   
+                    jPanelContenido.add(new InterBusquedaAvanzada(), opcion);
+                case "Salir" -> {
+                }
                 default ->
                     jPanelContenido.add(panel(opcion), opcion);  // Temporal
             }
@@ -169,6 +173,14 @@ public class Inicio extends javax.swing.JFrame {
         });
 
         boton.addActionListener(e -> {
+            if (nombre.equals("Salir")) {
+                int confirm = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que deseas salir?", "Confirmar salida", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    System.exit(0);
+                }
+                return;
+            }
+
             if (botonSeleccionado != null) {
                 botonSeleccionado.setBackground(new Color(40, 53, 147));
             }
@@ -367,22 +379,22 @@ public class Inicio extends javax.swing.JFrame {
             }
         });
 
-       // Animación de número
-new Thread(() -> {
-    int valorActual = 0;
-    int delay = 70;
-    int paso = Math.max(1, valorFinal / 25);
-    while (valorActual < valorFinal) {
-        valorActual = Math.min(valorActual + paso, valorFinal);
-        final int mostrar = valorActual;
-        SwingUtilities.invokeLater(() -> lblValor.setText(String.valueOf(mostrar)));
-        try {
-            Thread.sleep(delay);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-}).start();
+        // Animación de número
+        new Thread(() -> {
+            int valorActual = 0;
+            int delay = 70;
+            int paso = Math.max(1, valorFinal / 25);
+            while (valorActual < valorFinal) {
+                valorActual = Math.min(valorActual + paso, valorFinal);
+                final int mostrar = valorActual;
+                SwingUtilities.invokeLater(() -> lblValor.setText(String.valueOf(mostrar)));
+                try {
+                    Thread.sleep(delay);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }).start();
         return contenedor;
     }
 
