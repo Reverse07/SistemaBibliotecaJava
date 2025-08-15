@@ -57,19 +57,19 @@
 <div align="center">
 
 ### 🔑 Pantalla de Login
-<img src="src/img/LoginVista.png" width="700" alt="Pantalla de Login"/>
+<img src="src/main/resources/img/loginVista.png" width="700" alt="Pantalla de Login"/>
 
 ### 📌 Interfaz Principal
-<img src="src/img/MenuVista.png" width="700" alt="Interfaz Principal"/>
+<img src="src/main/resources/img/panelPrincipalBiblioteca.png" width="700" alt="Interfaz Principal"/>
 
 ### 📕 Gestión de Préstamos
-<img src="src/img/PrestamosVista.png" width="700" alt="Módulo de Préstamos"/>
+<img src="src/main/resources/img/panelPrincipalBiblioteca.png" width="700" alt="Módulo de Préstamos"/>
 
 ### 📗 Gestión de Devoluciones
-<img src="src/img/DevolucionesVista.png" width="700" alt="Módulo de Devoluciones"/>
+<img src="src/main/resources/img/VistaDevoluciones.png" width="700" alt="Vista Devoluciones"/>
 
 ### 📊 Reportes
-<img src="src/img/ReportesVista.png" width="700" alt="Generación de Reportes"/>
+<img src="src/main/resources/img/reporteVista.png" width="700" alt="Generación de Reportes"/>
 
 </div>
 
