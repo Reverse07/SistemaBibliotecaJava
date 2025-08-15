@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import org.mindrot.jbcrypt.BCrypt;
 
 
 public class UsuarioDAO {
@@ -144,5 +145,74 @@ public class UsuarioDAO {
             System.err.println("❌ Error contando usuarios: " + e.getMessage());
         }
         return total;
+    }
+    
+    public Usuario autenticar(String correo, String contraseña) {
+        final String SQL = 
+            "SELECT u.id, u.nombre, u.apellido, u.dni, u.correo, u.telefono, " +
+            "       u.id_rol, r.nombre AS nombre_rol, u.`contraseña` AS hash " +
+            "FROM usuarios u " +
+            "JOIN roles r ON u.id_rol = r.id " +
+            "WHERE LOWER(u.correo) = LOWER(?) " +
+            "LIMIT 1";
+
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement stmt = con.prepareStatement(SQL)) {
+
+            stmt.setString(1, correo);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (!rs.next()) return null;
+
+                int id = rs.getInt("id");
+                String hashAlmacenado = rs.getString("hash");
+
+                boolean esValido = false;
+
+                if (esHashBCrypt(hashAlmacenado)) {
+                    // Comparación segura con BCrypt
+                    try {
+                        esValido = BCrypt.checkpw(contraseña, hashAlmacenado);
+                    } catch (IllegalArgumentException ex) {
+                        esValido = false; // hash corrupto
+                    }
+                } else {
+                    // Caso temporal: texto plano
+                    esValido = contraseña.equals(hashAlmacenado);
+
+                    // Migración automática a BCrypt
+                    if (esValido) {
+                        String nuevoHash = BCrypt.hashpw(contraseña, BCrypt.gensalt());
+                        try (PreparedStatement up = con.prepareStatement(
+                                "UPDATE usuarios SET `contraseña` = ? WHERE id = ?")) {
+                            up.setString(1, nuevoHash);
+                            up.setInt(2, id);
+                            up.executeUpdate();
+                            hashAlmacenado = nuevoHash;
+                        }
+                    }
+                }
+
+                if (!esValido) return null;
+
+                RolesBiblioteca rol = new RolesBiblioteca(rs.getInt("id_rol"), rs.getString("nombre_rol"));
+                return new Usuario(
+                    id,
+                    rs.getString("nombre"),
+                    rs.getString("apellido"),
+                    rs.getInt("dni"),
+                    rs.getString("correo"),
+                    rs.getInt("telefono"),
+                    rol
+                );
+            }
+
+        } catch (SQLException e) {
+            System.err.println("❌ Error autenticando usuario: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private boolean esHashBCrypt(String s) {
+        return s != null && (s.startsWith("$2a$") || s.startsWith("$2b$") || s.startsWith("$2y$"));
     }
 }

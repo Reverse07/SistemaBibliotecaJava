@@ -10,6 +10,7 @@ public class Usuario {
     private String correo;
     private int telefono;
     private RolesBiblioteca rol;
+    private String contraseña;
 
     public Usuario() {
     }
@@ -79,6 +80,15 @@ public class Usuario {
     public void setRol(RolesBiblioteca rol) {
         this.rol = rol;
     }
+
+    public String getContraseña() {
+        return contraseña;
+    }
+
+    public void setContraseña(String contraseña) {
+        this.contraseña = contraseña;
+    }
+    
 
     @Override
 public String toString() {

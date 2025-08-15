@@ -57,6 +57,13 @@
             <artifactId>jcommon</artifactId>
             <version>1.0.24</version>
         </dependency>
+
+        <!-- BCrypt para encriptar contraseñas -->
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -75,7 +82,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <mainClass>Vista.Inicio</mainClass>
+                    <mainClass>Vista.LoginBiblioteca</mainClass>
                 </configuration>
             </plugin>
         </plugins>
