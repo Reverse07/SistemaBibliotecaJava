@@ -64,7 +64,7 @@
 <img src="src/main/resources/img/panelPrincipalBiblioteca.png" width="700" alt="Interfaz Principal"/>
 
 ### 📕 Gestión de Préstamos
-<img src="src/main/resources/img/panelPrincipalBiblioteca.png" width="700" alt="Módulo de Préstamos"/>
+<img src="src/main/resources/img/prestamoVista.png" width="700" alt="Módulo de Préstamos"/>
 
 ### 📗 Gestión de Devoluciones
 <img src="src/main/resources/img/VistaDevoluciones.png" width="700" alt="Vista Devoluciones"/>
