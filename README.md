@@ -13,6 +13,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=java&logoColor=white" />
+  <img src="https://img.shields.io/badge/Maven-3.8+-C71A36?style=for-the-badge&logo=apache-maven&logoColor=white" />
   <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white" />
   <img src="https://img.shields.io/badge/Swing-GUI-orange?style=for-the-badge&logo=java&logoColor=white" />
   <img src="https://img.shields.io/badge/Reports-PDF-red?style=for-the-badge&logo=adobe&logoColor=white" />
@@ -82,6 +83,7 @@
 | Tecnología | Versión | Propósito |
 |:----------:|:-------:|:---------:|
 | ![Java](https://img.shields.io/badge/Java-17-ED8B00?style=flat&logo=java&logoColor=white) | 17 LTS | Lógica de negocio y GUI |
+| ![Maven](https://img.shields.io/badge/Maven-3.8+-C71A36?style=flat&logo=apache-maven&logoColor=white) | 3.8+ | Automatización de construcción y gestión de dependencias |
 | ![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white) | 8.0 | Base de datos relacional |
 | ![JDBC](https://img.shields.io/badge/JDBC-Connector-blue?style=flat) | Latest | Conectividad BD |
 | ![Swing](https://img.shields.io/badge/Swing-GUI-orange?style=flat&logo=java) | Built-in | Interfaz gráfica |
@@ -95,15 +97,23 @@
 
 ```
 📦 SistemaBibliotecaJava/
-├── 📂 principal/          # Menú principal
-├── 📂 prestamos/          # Módulo de préstamos
-├── 📂 devoluciones/       # Módulo de devoluciones
-├── 📂 usuarios/           # Gestión de usuarios
-├── 📂 libros/             # Gestión de libros
-├── 📂 reportes/           # Reportes PDF
-├── 📂 busqueda/           # Módulo de búsqueda
-├── 📂 conexion/           # Conexión a la BD
-└── 📂 salir/              # Cerrar sesión y salida
+├── 📂 src/
+│   ├── 📂 main/
+│   │   ├── 📂 java/
+│   │   │   ├── 📂 principal/          # Menú principal
+│   │   │   ├── 📂 prestamos/          # Módulo de préstamos
+│   │   │   ├── 📂 devoluciones/       # Módulo de devoluciones
+│   │   │   ├── 📂 usuarios/           # Gestión de usuarios
+│   │   │   ├── 📂 libros/             # Gestión de libros
+│   │   │   ├── 📂 reportes/           # Reportes PDF
+│   │   │   ├── 📂 busqueda/           # Módulo de búsqueda
+│   │   │   ├── 📂 conexion/           # Conexión a la BD
+│   │   │   └── 📂 salir/              # Cerrar sesión y salida
+│   │   └── 📂 resources/
+│   │       ├── 📂 img/                # Imágenes de la aplicación
+│   │       └── 📂 reports/            # Plantillas de JasperReports
+├── 📂 target/                         # Clases compiladas
+└── 📄 pom.xml                         # Configuración Maven
 ```
 
 ---
@@ -138,6 +148,7 @@
 ```bash
 ☕ Java 17 o superior
 🛢️ MySQL 8.0+
+🔧 Maven 3.8+
 ```
 
 ### Pasos de Instalación
@@ -156,20 +167,24 @@ USE biblioteca;
 ```
 
 3. **Configurar conexión**
-Editar `conexion/CConexion.java`:
+Editar `src/main/java/conexion/CConexion.java`:
 ```java
 String url = "jdbc:mysql://localhost:3306/biblioteca";
 String user = "tu_usuario";
 String password = "tu_contraseña";
 ```
 
-4. **Ejecutar el proyecto**
-   - Desde tu IDE (NetBeans/IntelliJ)
-   
-   O con consola:
+4. **Compilar y ejecutar el proyecto**
 ```bash
-javac -cp "lib/*:src" src/principal/Main.java
-java -cp "lib/*:src" principal.Main
+# Limpiar y compilar
+mvn clean compile
+
+# Ejecutar la aplicación
+mvn exec:java -Dexec.mainClass="principal.Main"
+
+# O crear JAR ejecutable
+mvn clean package
+java -jar target/library-system-1.0.jar
 ```
 
 ---
