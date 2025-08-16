@@ -64,7 +64,7 @@
 <img src="src/main/resources/img/panelPrincipalBiblioteca.png" width="700" alt="Main Interface"/>
 
 ### 📕 Loan Management
-<img src="src/main/resources/img/panelPrincipalBiblioteca.png" width="700" alt="Loan Module"/>
+<img src="src/main/resources/img/prestamoVista.png" width="700" alt="Loan Module"/>
 
 ### 📗 Return Management
 <img src="src/main/resources/img/VistaDevoluciones.png" width="700" alt="Returns View"/>
